@@ -13,7 +13,7 @@ CREATE TABLE users (
 
 CREATE TABLE posts (
     post_id UUID DEFAULT uuid_in((md5((random())::text))::cstring) PRIMARY KEY,
-    user_id UUID DEFAULT uuid_in((md5((random())::text))::cstring),
+    user_id UUID NOT NULL,
     title TEXT,
     content TEXT,
     likes INT DEFAULT 0,
@@ -22,9 +22,11 @@ CREATE TABLE posts (
 
 CREATE TABLE followings (
     following_id UUID DEFAULT uuid_in((md5((random())::text))::cstring) PRIMARY KEY,
-    user_id UUID DEFAULT uuid_in((md5((random())::text))::cstring),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
+    followed_id UUID NOT NULL,
+    user_id UUID NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    -- Ensure unique following relationships
+    CONSTRAINT unique_follow UNIQUE(user_id, followed_id),
+    -- Prevent self-follows
+    CONSTRAINT prevent_self_follow CHECK (user_id != followed_id)
 );
-
-CREATE UNIQUE INDEX unique_following 
-ON followings (user_id, following_id);

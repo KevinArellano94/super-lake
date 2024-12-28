@@ -81,18 +81,48 @@ export const User = {
             });
         }
     },
-    followings: async (parent: { user_id: string }) => {
+    following: async (parent: { user_id: string }) => {
         try {
-            const userFollowings = await DB
-                .select()
+            const userFollowing = await DB
+                .select({
+                    following_id: followings.following_id,
+                    followed_id: followings.followed_id,
+                    user_id: followings.user_id,
+                    created_at: followings.created_at,
+                    username: users.username,
+                })
                 .from(followings)
+                .innerJoin(users, eq(users.user_id, followings.followed_id))
                 .where(eq(followings.user_id, parent.user_id))
                 .orderBy(desc(followings.created_at));
 
-            return userFollowings;
+            return userFollowing;
         } catch (error) {
-            console.error("Error fetching user followings:", error);
-            throw new GraphQLError("Failed to fetch user followings", {
+            console.error("Error fetching user following:", error);
+            throw new GraphQLError("Failed to fetch user following", {
+                extensions: { code: "INTERNAL_SERVER_ERROR" }
+            });
+        }
+    },
+    followers: async (parent: { user_id: string }) => {
+        try {
+            const userFollowers = await DB
+                .select({
+                    following_id: followings.following_id,
+                    followed_id: followings.followed_id,
+                    user_id: followings.user_id,
+                    created_at: followings.created_at,
+                    username: users.username,
+                })
+                .from(followings)
+                .innerJoin(users, eq(users.user_id, followings.user_id))
+                .where(eq(followings.followed_id, parent.user_id))
+                .orderBy(desc(followings.created_at));
+
+            return userFollowers;
+        } catch (error) {
+            console.error("Error fetching user followers:", error);
+            throw new GraphQLError("Failed to fetch user followers", {
                 extensions: { code: "INTERNAL_SERVER_ERROR" }
             });
         }

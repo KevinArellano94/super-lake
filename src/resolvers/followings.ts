@@ -8,7 +8,32 @@ const DEFAULT_PAGE = 1;
 const DEFAULT_PER_PAGE = 10;
 
 export const Query = {
-    followings: async (_parent: unknown, args: { page: number, perPage: number, userId: string, createdAt: string }, ___: unknown) => {
+    following: async (_parent: unknown, args: { page: number, perPage: number, userId: string, createdAt: string }, ___: unknown) => {
+        try {
+            const { page = DEFAULT_PAGE, perPage = DEFAULT_PER_PAGE, userId, createdAt } = args;
+            const offset = (page - 1) * perPage;
+
+            const query = DB
+                .select()
+                .from(followings)
+                .offset(offset)
+                .limit(perPage);
+
+            if (userId) {
+                query.where(ilike(followings.user_id, userId));
+            }
+
+            if (createdAt) {
+                query.where(sql`created_at::text ILIKE ${ createdAt }`);
+            }
+
+            return await query;
+        } catch (error) {
+            console.error('Error fetching followings:', error);
+            throw new Error('Failed to fetch followings');
+        }
+    },
+    followers: async (_parent: unknown, args: { page: number, perPage: number, userId: string, createdAt: string }, ___: unknown) => {
         try {
             const { page = DEFAULT_PAGE, perPage = DEFAULT_PER_PAGE, userId, createdAt } = args;
             const offset = (page - 1) * perPage;
