@@ -1,6 +1,7 @@
 import drizzleConnection from "../connection/drizzle.ts";
 import users from "../model/users.ts";
 import posts from "../model/posts.ts";
+import followings from "../model/followings.ts";
 const DB = drizzleConnection();
 import { sql, eq, ne, gt, gte, like, ilike, asc, desc } from "drizzle-orm";
 
@@ -76,6 +77,22 @@ export const User = {
         } catch (error) {
             console.error("Error fetching user posts:", error);
             throw new GraphQLError("Failed to fetch user posts", {
+                extensions: { code: "INTERNAL_SERVER_ERROR" }
+            });
+        }
+    },
+    followings: async (parent: { user_id: string }) => {
+        try {
+            const userFollowings = await DB
+                .select()
+                .from(followings)
+                .where(eq(followings.user_id, parent.user_id))
+                .orderBy(desc(followings.created_at));
+
+            return userFollowings;
+        } catch (error) {
+            console.error("Error fetching user followings:", error);
+            throw new GraphQLError("Failed to fetch user followings", {
                 extensions: { code: "INTERNAL_SERVER_ERROR" }
             });
         }

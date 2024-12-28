@@ -20,6 +20,7 @@ type User {
     website: String
     created_at: DateTime
     posts: [Post!]
+    followings: [Following!]
 }
 
 input UserInput {
