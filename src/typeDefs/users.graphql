@@ -1,0 +1,32 @@
+scalar DateTime
+
+
+type Query {
+    user(userId: ID): User
+    users(page: Int, perPage: Int, username: String, location: String, createdAt: String): [User]
+}
+
+type Mutation {
+    addUser(input: UserInput): [User]
+}
+
+type User {
+    user_id: ID
+    bio: String
+    display_name: String
+    location: String
+    profile_image_url: String
+    username: String
+    website: String
+    created_at: DateTime
+    posts: [Post!]
+}
+
+input UserInput {
+    bio: String
+    display_name: String
+    location: String
+    profile_image_url: String
+    username: String!
+    website: String
+}

@@ -1,0 +1,26 @@
+scalar DateTime
+
+
+type Query {
+    posts(page: Int, perPage: Int, title: String, createdAt: String): [Post]
+}
+
+type Mutation {
+    addPost(input: PostInput): [Post]
+}
+
+type Post {
+    post_id: ID
+    user_id: ID
+    title: String
+    content: String
+    likes: Int
+    created_at: DateTime
+}
+
+input PostInput {
+    user_id: ID
+    title: String
+    content: String
+    likes: Int
+}
