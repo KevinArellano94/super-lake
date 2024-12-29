@@ -57,8 +57,6 @@ export const Mutation = {
                 .where(eq(posts.post_id, input.post_id))
                 .returning();
 
-            console.log(updatePostLikeCount);
-
             if (!updatePostLikeCount.length) {
                 throw new Error('Post not found');
             }
