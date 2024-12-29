@@ -21,7 +21,9 @@ type User {
     created_at: DateTime
     posts: [Post!]
     following: [Following!]
+    followingCount: [FollowingCount]
     followers: [Following!]
+    followersCount: [FollowingCount]
 }
 
 input UserInput {

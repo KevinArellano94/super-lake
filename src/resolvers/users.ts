@@ -3,7 +3,7 @@ import users from "../model/users.ts";
 import posts from "../model/posts.ts";
 import followings from "../model/followings.ts";
 const DB = drizzleConnection();
-import { sql, eq, ne, gt, gte, like, ilike, asc, desc } from "drizzle-orm";
+import { sql, eq, ne, gt, gte, like, ilike, asc, desc, count } from "drizzle-orm";
 
 
 const DEFAULT_PAGE = 1;
@@ -104,6 +104,21 @@ export const User = {
             });
         }
     },
+    followingCount: async (parent: { user_id: string }) => {
+        try {
+            const followingCount = DB
+                .select({ 
+                    count: count() 
+                })
+                .from(followings)
+                .where(eq(followings.user_id, parent.user_id))
+
+            return await followingCount;
+        } catch (error) {
+            console.error('Error fetching followingCount:', error);
+            throw new Error('Failed to fetch followingCount');
+        }
+    },
     followers: async (parent: { user_id: string }) => {
         try {
             const userFollowers = await DB
@@ -125,6 +140,21 @@ export const User = {
             throw new GraphQLError("Failed to fetch user followers", {
                 extensions: { code: "INTERNAL_SERVER_ERROR" }
             });
+        }
+    },
+    followersCount: async (parent: { user_id: string }) => {
+        try {
+            const followersCount = DB
+                .select({ 
+                    count: count() 
+                })
+                .from(followings)
+                .where(eq(followings.followed_id, parent.user_id))
+
+            return await followersCount;
+        } catch (error) {
+            console.error('Error fetching followersCount:', error);
+            throw new Error('Failed to fetch followersCount');
         }
     }
 };
