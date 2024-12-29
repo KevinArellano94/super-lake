@@ -8,9 +8,4 @@ const followings = pgTable('followings', {
     created_at: timestamp('created_at').notNull().defaultNow(),
 });
 
-// , (table) => ({
-//     pk: primaryKey(table.user_id, table.following_id),
-//     uniqueFollowing: uniqueIndex('unique_following').on(table.user_id, table.following_id)
-// })
-
 export default followings;

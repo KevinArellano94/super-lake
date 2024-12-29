@@ -1,7 +1,7 @@
 import drizzleConnection from "../connection/drizzle.ts";
 import followings from "../model/followings.ts";
 const DB = drizzleConnection();
-import { sql, eq, ne, gt, gte, like, ilike } from "drizzle-orm";
+import { sql, eq, ne, gt, gte, like, ilike, and } from "drizzle-orm";
 
 
 const DEFAULT_PAGE = 1;
@@ -76,6 +76,26 @@ export const Mutation = {
             }
             console.error('Error adding following:', error);
             throw new Error('Failed to add following');
+        }
+    },
+    removeFollowing: async (_parent: unknown, { input }: any, ___: unknown) => {
+        try {
+            const deletedFollowings = await DB
+                .delete(followings)
+                .where(and(
+                    eq(followings.user_id, input.user_id),
+                    eq(followings.followed_id, input.followed_id)
+                ))
+                .returning();
+
+            if (!deletedFollowings.length) {
+                throw new Error('Following relationship not found');
+            }
+
+            return deletedFollowings;
+        } catch (error) {
+            console.error('Error removing following:', error);
+            throw new Error('Failed to remove following');
         }
     }
 };

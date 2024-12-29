@@ -8,7 +8,7 @@ type Query {
 
 type Mutation {
     addFollowing(input: FollowingInput): [Following]
-    # removeFollowing(input: FollowingInput): [Following]
+    removeFollowing(input: FollowingInput): [Following]
 }
 
 type Following {
@@ -20,6 +20,6 @@ type Following {
 }
 
 input FollowingInput {
-    followed_id: ID
-    user_id: ID
+    followed_id: String
+    user_id: String
 }
