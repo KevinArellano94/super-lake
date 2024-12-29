@@ -1,0 +1,22 @@
+scalar DateTime
+
+
+type Query {
+    likes(page: Int, perPage: Int, likeId: ID, post_id: ID, userId: ID, createdAt: String): [Like]
+}
+
+type Mutation {
+    addLike(input: LikeInput): [Like]
+}
+
+type Like {
+    like_id: ID
+    post_id: ID
+    user_id: ID
+    created_at: DateTime
+}
+
+input LikeInput {
+    post_id: ID
+    user_id: ID
+}

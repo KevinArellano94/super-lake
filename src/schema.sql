@@ -25,8 +25,17 @@ CREATE TABLE followings (
     followed_id UUID NOT NULL,
     user_id UUID NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    -- Ensure unique following relationships
+    -- Prevent duplicate likes from the same user
     CONSTRAINT unique_follow UNIQUE(user_id, followed_id),
     -- Prevent self-follows
     CONSTRAINT prevent_self_follow CHECK (user_id != followed_id)
+);
+
+CREATE TABLE likes (
+    like_id UUID DEFAULT uuid_in((md5((random())::text))::cstring) PRIMARY KEY,
+    post_id UUID NOT NULL,
+    user_id UUID NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+     -- Prevent duplicate likes from the same user
+    UNIQUE(post_id, user_id)
 );
