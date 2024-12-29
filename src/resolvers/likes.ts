@@ -3,7 +3,7 @@ import likes from "../model/likes.ts";
 import posts from "../model/posts.ts";
 import users from "../model/users.ts";
 const DB = drizzleConnection();
-import { sql, eq, ne, gt, gte, like, ilike } from "drizzle-orm";
+import { sql, eq, ne, gt, gte, like, ilike, and } from "drizzle-orm";
 
 
 const DEFAULT_PAGE = 1;
@@ -68,6 +68,38 @@ export const Mutation = {
         } catch (error) {
             console.error('Error adding like:', error);
             throw new Error('Failed to add like');
+        }
+    },
+    removeLike: async (_parent: unknown, { input }: any, ___: unknown) => {
+        try {
+            const deletedLikes = await DB
+                .delete(likes)
+                .where(and(
+                    eq(likes.user_id, input.user_id),
+                    eq(likes.post_id, input.post_id)
+                ))
+                .returning();
+            
+            if (!deletedLikes.length) {
+                throw new Error('Following relationship not found');
+            }
+
+            const updatePostLikeCount = await DB
+                .update(posts)
+                .set({
+                    likes: sql`${posts.likes} - 1`,
+                })
+                .where(eq(posts.post_id, input.post_id))
+                .returning();
+
+            if (!updatePostLikeCount.length) {
+                throw new Error('Post not found');
+            }
+
+            return deletedLikes;
+        } catch (error) {
+            console.error('Error removing like:', error);
+            throw new Error('Failed to remove like');
         }
     }
 };
