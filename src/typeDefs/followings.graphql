@@ -3,7 +3,9 @@ scalar DateTime
 
 type Query {
     following(page: Int, perPage: Int, userId: ID, createdAt: String): [Following]
+    followingCount(userId: ID): [FollowingCount]
     followers(page: Int, perPage: Int, userId: ID, createdAt: String): [Following]
+    followersCount(userId: ID): [FollowingCount]
 }
 
 type Mutation {
@@ -22,4 +24,8 @@ type Following {
 input FollowingInput {
     followed_id: String
     user_id: String
+}
+
+type FollowingCount {
+    count: Int
 }
